@@ -1,0 +1,14 @@
+runtime: python
+env: flex
+entrypoint: gunicorn -b :$PORT main:app
+
+service: frontend
+
+
+automatic_scaling:
+  min_num_instances: 1
+  max_num_instances: 15
+  max_concurrent_requests: 5
+  cool_down_period_sec: 180
+  cpu_utilization:
+    target_utilization: 0.3

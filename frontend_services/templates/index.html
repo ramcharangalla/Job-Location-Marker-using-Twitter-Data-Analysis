@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="UTF=8">
+	<script type = "text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"> </script>
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCgBAk-811OZnyBU86ErCFcFUqfcPb6Dg8&callback=initialize"></script>
+	<title>Job Marker Location</title>
+	<style>
+	body { background-color: #f2f2f2; }
+	#map_canvas
+	{
+		float: left;
+	  width: 50%;
+		height: 500px;
+		padding-top: 75px;
+	}	div .promos
+	{
+		float: left;
+	  width: 50%;
+		height: 500px;
+	  margin: auto;
+		overflow: auto;
+	}
+	.promo
+	{
+	  width: 525px;
+	  background: #464a53;
+	  color: #ffffff;
+	  float: none;
+		margin:auto;
+	}
+	h1.second { text-align: center; }
+	.promo .companyname
+	{
+	  display: block;
+	  width: 525px;
+	  background: #292b2e;
+	  margin: 15px 0 10px 0;
+	  text-align: center;
+	  font-size: 23px;
+	  padding: 17px 0 17px 0;
+		color: #1a75ff;
+		text-transform: capitalize;
+	}
+	.promo .locationname
+	{
+		display: block;
+		width: 525px;
+		background: #292b2e;
+		margin: 15px 0 10px 0;
+		text-align: center;
+		font-size: 23px;
+		padding: 17px 0 17px 0;
+		color: #00b300;
+		text-transform: capitalize;
+	}
+	ul
+	{
+	  display: block;
+	  margin: 20px 0 10px 0;
+	  padding: 0;
+	  list-style-type: none;
+	  text-align: center;
+	  color: #999999;
+	}
+	li
+	{
+	  display: block;
+	  margin: 10px 0 0 0;
+	}
+	a { text-decoration: none ;}
+	a:hover
+	{
+		text-decoration:none;
+		cursor:pointer;
+ 	}
+	.scale
+	{
+	  transform: scale(1.2);
+	  box-shadow: 0 0 4px 1px rgba(20, 20, 20, 0.8);
+	}
+	</style>
+
+<script type="text/javascript">
+	var Lat = 1, Lng = 1;
+	var city_array;
+	var map;
+	function plotGeoLoc(index, cityArray, job_array)
+	{
+		var geocoder = new google.maps.Geocoder();
+		console.log(cityArray, job_array)
+		geocoder.geocode({'address': cityArray[index]}, function(results, status)
+		 {
+			 if(results != null)
+			 {
+				 if(results.length != 0)
+				 {
+					 Lat = results[0].geometry.location.lat();
+					 Lng = results[0].geometry.location.lng();
+					 console.log(Lat,Lng);
+					 var position = new google.maps.LatLng(Lat, Lng);
+					 bounds.extend(position);
+					 marker = new google.maps.Marker({
+							position: position,
+							map: map,
+							label:job_array[index]
+					 });
+					 var infoWindow = new google.maps.InfoWindow(), marker, i;
+					 // Allow each marker to have an info window
+					 console.log(cityArray[index]);
+					 google.maps.event.addListener(marker, 'click', (function(marker, ) {
+							return function() {
+									infoWindow.setContent(cityArray[index]);
+									infoWindow.open(map, marker);
+							}
+					 })(marker, i));
+					 map.fitBounds(bounds);
+
+				 }
+			 }
+		 });
+	}
+	function initialize()
+	{
+			bounds = new google.maps.LatLngBounds();
+			uluru = {lat: 37.773972 , lng: -122.431297 }
+			myOptions = { zoom: 7, center: uluru, mapTypeId: google.maps.MapTypeId.ROADMAP }
+			map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+			address =[];
+		  address = '{{ cities }}';
+			jobCount = '{{ jobCount }}';
+			if (address != '')
+			{
+					city_array = address.split(',');
+					job_array = jobCount.split(',');
+					var Lat;
+					var Lng;
+			    for( i = 0; i < city_array.length; i++ )
+					{
+						plotGeoLoc(i, city_array, job_array)
+			    }
+	    var boundsListener = google.maps.event.addListener((map), 'bounds_changed', function(event) {
+	        this.setZoom(11);
+	        google.maps.event.removeListener(boundsListener);
+	    		});
+			}
+
+	}
+	</script>
+</head>
+<body>
+<div class="container">
+	<h1>Twitter Job Search</h1>
+		<FORM id='submit_params' method="POST" action="{{ url_for('get_information') }}">
+			<div class="form-group">
+				<table class="table">
+    			<tr>
+        		<td width="300px">Job Type:</td>
+        		<td width="300px">Job Location:</td>
+						<td></td>
+    			</tr>
+    			<tr>
+        		<td>
+							<select name ="jobtype" class="form-control" id="jobtype" placeholder="Enter Job Type">
+							<option value="Anything">Anything</option>
+    					<option value="Chef">Chef</option>
+    					<option value="Dev Ops">Dev Ops</option>
+    					<option value="Marketing">Marketing</option>
+							<option value="Manager">Manager</option>
+							<option value="full-time">full-time</option>
+							<option value="Recruiter">Recruiter</option>
+							<option value="Media">Media</option>
+							<option value="Sales">Sales</option>
+							<option value="Developer">Developer</option>
+							<option value="Associate">Associate</option>
+							<option value="Teacher">Teacher</option>
+							<option value="Full Stack Engineer">Full Stack Engineer</option>
+							<option value="Director">Director</option>
+							<option value="Product Manager">Product Manager</option>
+							<option value="Software Engineer">Software Engineer</option>
+						  </select>
+						</td>
+        		<td><input type="text" class="form-control" id="joblocation" placeholder="Enter Job Location" name="joblocation"></td>
+						<td><button class="btn-default" type="submit"  value ="submit"  style="width: 150px; height: 30px; ">Search</button></td>
+    			</tr>
+					<tr>
+						<td class ="jobtype_error"> <span class="error_form" id="jobtype_errormessage"></span></td>
+		  			<td class ="joblocation_error"><span class="error_form" id="joblocation_errormessage"></span></td>
+						<td></td>
+					</tr>
+				</table>
+			</div>
+		</form>
+<br>
+	<h1 class="second">{{error}}</h1>
+<br>
+<br>
+<div id='map_canvas'></div>
+<div class="promos">
+    {% for row in result %}
+				<div class="promo">
+					<a target=" _blank" href = {{row[0]}}>
+					<span class="companyname">{{row[3]}}</span>
+					<ul class="features">
+						<li>{{row[1]}}</li>
+					</ul>
+					<span class="locationname">{{row[2]}}</span>
+					</a>
+				</div>
+    {% endfor %}
+</div>
+</div>
+</body>
+</html>

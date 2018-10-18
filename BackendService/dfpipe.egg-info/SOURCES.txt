@@ -1,0 +1,8 @@
+README.md
+setup.py
+dfpipe/__init__.py
+dfpipe/pipe.py
+dfpipe.egg-info/PKG-INFO
+dfpipe.egg-info/SOURCES.txt
+dfpipe.egg-info/dependency_links.txt
+dfpipe.egg-info/top_level.txt

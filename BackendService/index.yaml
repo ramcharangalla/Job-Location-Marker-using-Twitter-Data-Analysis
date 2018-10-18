@@ -1,0 +1,36 @@
+indexes:
+
+- kind: processedTweets
+  properties:
+  - name: Location
+    direction: asc
+  - name: Job List
+    direction: asc
+
+- kind: finalProcessedTweets
+  properties:
+  - name: Location
+    direction: asc
+  - name: Job_List
+    direction: asc
+  - name: Company_Name
+    direction: asc
+
+- kind: finalProcessedTweets
+  properties:
+  - name: Job_List
+  - name: Location
+  - name: Company_Name
+    direction: desc
+
+- kind: finalProcessedTweets
+  properties:
+  - name: Location
+  - name: Company_Name
+    direction: desc
+
+- kind: finalProcessedTweets
+  properties:
+  - name: Job_List
+  - name: Company_Name
+    direction: desc
